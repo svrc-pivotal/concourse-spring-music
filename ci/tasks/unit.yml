@@ -1,13 +1,13 @@
 ---
 platform: linux
 
-
 image_resource:
   type: docker-image
-  source: { respository: datianshi/gradle }
+  source: 
+    respository: datianshi/gradle
 
 inputs:
-  - name: music-repo
+- name: music-repo
 
 run:
   path: music-repo/ci/tasks/unit.sh
