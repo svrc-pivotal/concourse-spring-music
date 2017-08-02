@@ -6,4 +6,6 @@ version=`cat version/number`
 cd music-repo
 #echo $version
 gradle assemble -PVersion=$version
+mkdir ../build_output
+mv build/libs/* build_output
 #ls build/libs/
