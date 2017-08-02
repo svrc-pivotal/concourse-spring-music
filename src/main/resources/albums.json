@@ -8,7 +8,7 @@
     },
     {
         "_class": "org.cloudfoundry.samples.music.domain.Album",
-        "artist": "The Beach Boys",
+        "artist": "The Reach Boys",
         "title": "Pet Sounds",
         "releaseYear": "1966",
         "genre": "Rock"
