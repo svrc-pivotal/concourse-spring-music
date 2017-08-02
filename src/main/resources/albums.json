@@ -15,7 +15,7 @@
     },
     {
         "_class": "org.cloudfoundry.samples.music.domain.Album",
-        "artist": "Marvin Gaye",
+        "artist": "Marvin Berry",
         "title": "What's Going On",
         "releaseYear": "1971",
         "genre": "Rock"
