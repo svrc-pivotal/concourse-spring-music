@@ -3,7 +3,7 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source: { respository: datianshi/gradle }
+  source: { repository: datianshi/gradle }
 
 
 inputs:
