@@ -8,14 +8,14 @@
     },
     {
         "_class": "org.cloudfoundry.samples.music.domain.Album",
-        "artist": "The Reach Boys",
+        "artist": "The Beach Boys",
         "title": "Pet Sounds",
         "releaseYear": "1966",
         "genre": "Rock"
     },
     {
         "_class": "org.cloudfoundry.samples.music.domain.Album",
-        "artist": "Marvin Berry",
+        "artist": "Marvin Gaye",
         "title": "What's Going On",
         "releaseYear": "1971",
         "genre": "Rock"
