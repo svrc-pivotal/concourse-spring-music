@@ -1,0 +1,136 @@
+
+resource_types:
+- name: maven-resource
+  type: docker-image
+  source:
+    repository: patrickcrocker/maven-resource
+  
+
+- name: flowdock-notification
+  type: docker-image
+  source:
+    repository: starkandwayne/flowdock-notification-resource
+    
+    
+resources:
+
+- name: flowdock-drone
+  type: flowdock-notification
+  source:
+    name: https://api.flowdock.com/messages
+
+- name: releases
+  type: maven-resource
+  source:
+    url: http://((nexus_http_host_port))/repository/builds
+    artifact: com.example:spring-music:jar
+    username: admin
+    password: admin123
+
+- name: prod-version
+  type: semver
+  source:
+    driver: git
+    uri: {{github-repo-uri}}
+    branch: ((repo-version-branch))
+    private_key: {{github-private-key}}
+    file: prod_version
+    initial_version: {{initial-version}}
+
+- name: prod-cloud
+  type: cf
+  source:
+    api: {{cf_api}}
+    username: {{cf_user}}
+    password: {{cf_password}}
+    organization: {{cf_org}}
+    space: {{cf_prod_space}} 
+    skip_cert_check: true
+
+
+
+- name: repo
+  type: git
+  source:
+    uri: {{github-repo-uri}}
+    branch: ((repo-branch))
+    private_key: {{github-private-key}}
+  
+  
+jobs:
+     
+     
+     
+- name: prod-bump
+  serial: true
+  serial_groups: [ update_version ]
+  plan:
+  - get: prod-version  
+  - put: prod-version 
+    params: { pre: rc }
+       
+- name: notify-approval
+  serial: true
+  plan:
+  - get: prod-version
+    trigger: true
+  - get: releases    
+  - put: notify-approver
+    resource: flowdock-drone
+    params:
+      flow_token: {{prod_flow_token}}
+      message: Please Approve
+      thread_title: Deployment
+      msg_status_value: PENDING
+      pipeline_name: spring-music
+      pipeline_url: {{prod_pipeline_url}}
+      msg_title: Approval
+      username: Concourse
+      statuscolor: yellow
+      icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        
+- name: deploy
+  serial: true
+  plan:
+  - aggregate:
+    - get: repo
+    - get: prod-version
+      passed: [notify-approval]
+      trigger: false
+    - get: releases
+      passed: [notify-approval]
+  - put: prod-cloud
+    params:
+      manifest: repo/manifest-ci.yml
+      path: releases/spring-music*.jar
+    on_success:
+      do: 
+        - put: flowdock-drone
+          params:
+            flow_token: {{prod_flow_token}}
+            message: New version in prod
+            thread_title: Deployment
+            msg_status_value: SUCCESS
+            pipeline_name: spring-music
+            pipeline_url: {{prod_pipeline_url}}
+            msg_title: New cf push
+            username: Concourse
+            statuscolor: lime
+            icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        - put: prod-version
+          params: {bump: minor}
+        
+    on_failure:
+      put: flowdock-drone
+      params:
+        text: Deploy Failed
+        thread_title: Deployment
+        msg_status_value: FAIL
+        msg_title: Deploy failure
+        username: Concourse
+        pipeline_name: spring-music
+        pipeline_url: {{prod_pipeline_url}}
+        statuscolor: cyan
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        flow_token: {{prod_flow_token}}
+      

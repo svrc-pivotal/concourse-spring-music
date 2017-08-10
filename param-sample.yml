@@ -1,0 +1,24 @@
+github-repo-uri: git@github.com:svrc-pivotal/concourse-spring-music.git
+github-pipeline-uri: git@github.com:svrc-pivotal/concourse-flow.git
+
+flow_token: TOKEN HERE
+prod_flow_token: TOKEN HERE
+
+nexus_http_host_port: 172.20.10.4:8081
+repo-branch: master
+repo-version-branch: version
+
+
+github-private-key: 
+initial-version: 1.0.0-SNAPSHOT
+cf_api: api.gcp.ycf.link
+cf_user: scharlton@pivotal.io
+cf_password: PASSWOARD HERE
+cf_org: dev
+cf_space: music
+cf_prod_space: prod
+
+nonprod_pipeline_url: http://concourse-local.ycf.link:8080/teams/main/pipelines/exampleflow
+prod_pipeline_url: http://concourse-local.ycf.link:8080/teams/main/pipelines/prodflow
+
+
